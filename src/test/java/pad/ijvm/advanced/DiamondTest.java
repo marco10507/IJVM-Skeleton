@@ -49,19 +49,6 @@ public class DiamondTest {
     private long countChar(String s, char c) { return s.chars().filter(chr -> chr == c).count(); }
     
     private String hex(int op) { return Integer.toHexString(op); }
-
-    public void testStackOverflow() {
-        try{
-            newMachine(" ");
-            machine.run();
-            //I guess everybody will be using an array based solution
-            //That still does not guarantee an ArrayIndexOutOfBoundsException
-            //will be thrown. So maybe keep an eye on this
-            fail("Should StackOverflow (ArrayIndexOutOfBoundsException)");
-        }catch (ArrayIndexOutOfBoundsException e) {}
-    }
-
-   
          
     @Test(timeout=20000)
     public void testIn() throws IOException {
@@ -201,13 +188,13 @@ public class DiamondTest {
         machine.steps(11); 
         machine.steps(12); 
         
-        machine.steps(6);  //return
+        machine.steps(7);  //return
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
         machine.step();
         
@@ -220,7 +207,7 @@ public class DiamondTest {
         int invokes = 0;
         int returns = 0;
         
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 22; i++){
             if(machine.getInstruction() == INVOKEVIRTUAL)
                 invokes++;
             if(machine.getInstruction() == IRETURN)
@@ -230,6 +217,7 @@ public class DiamondTest {
         }
         
         assertEquals("Expected exactly 2 calls to INVOKEVIRTUAL", 2, invokes);
+        
         assertEquals("Expected exactly 2 calls to IRETURN", 2, returns);
         
         
@@ -272,11 +260,11 @@ public class DiamondTest {
         machine.steps(12); 
         assertEquals("Expected INVOKEVIRTUAL", INVOKEVIRTUAL, machine.getInstruction());
         
-        machine.steps(6);
+        machine.steps(7);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
         
         machine.steps(4); //call print
@@ -292,13 +280,13 @@ public class DiamondTest {
         assertEquals("Expected INVOKEVIRTUAL", INVOKEVIRTUAL, machine.getInstruction());
         
         
-        machine.steps(6);
+        machine.steps(7);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step();
+        machine.steps(2);
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
         machine.step();
 
@@ -314,18 +302,17 @@ public class DiamondTest {
         assertEquals("PC should be 0x17", 0x17, machine.getProgramCounter());
         
         
-        machine.steps(97); // go straight to the print char returns. We expect 6
-        
+        machine.steps(100); // go straight to the print char returns. We expect 6
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step(); 
+        machine.steps(2); 
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step(); 
+        machine.steps(2); 
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step(); 
+        machine.steps(2); 
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step(); 
+        machine.steps(2); 
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
-        machine.step(); 
+        machine.steps(2); 
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
         machine.step();
         
@@ -344,7 +331,7 @@ public class DiamondTest {
         assertEquals("Excpected INVOKEVIRTUAL", INVOKEVIRTUAL, machine.getInstruction());
         machine.step();
         
-        machine.steps(10); // this invoke should return without any recursive calls
+        machine.steps(12); // this invoke should return without any recursive calls
         assertEquals("Expected IRETURN", IRETURN, machine.getInstruction());
         machine.step();
         
@@ -369,3 +356,5 @@ public class DiamondTest {
     
     
 }
+
+
